@@ -1,5 +1,5 @@
 (function () {
-  var QUIZ_URL = 'https://your-project.vercel.app/quiz.html';
+  var QUIZ_URL = 'https://benglow-dental-quiz.vercel.app/';
   var CONTAINER_ID = 'smile-quiz-embed';
   // ============================================================
 
