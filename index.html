@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smile Fit Quiz - Bangalow Dental</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#f7f2ea;
+    --cream-deep:#efe6d8;
+    --forest:#2c3826;
+    --forest-deep:#1c2418;
+    --sage:#7c8b6a;
+    --sage-light:#a9b596;
+    --terracotta:#c1633d;
+    --terracotta-deep:#a34f2f;
+    --blush:#ecd9c9;
+    --ink:#20261b;
+    --paper:#fffdf9;
+    --line: rgba(44,56,38,0.14);
+    --shadow: 0 20px 60px -20px rgba(28,36,24,0.35);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0; padding:0; background:transparent;}
+  body{
+    font-family:'Work Sans', sans-serif;
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    letter-spacing:-0.01em;
+    margin:0;
+  }
+  p{margin:0;}
+  a{text-decoration:none;color:inherit;}
+  ::selection{background:var(--terracotta);color:var(--paper);}
+
+  /* ---------- quiz box ---------- */
+  .quiz-box{
+    background:var(--paper); border-radius:24px; box-shadow:var(--shadow); overflow:hidden;
+    border:1px solid var(--line); position:relative;
+    display:flex; flex-direction:column; height:auto;
+    max-width:480px; margin:0 auto;
+  }
+  .quiz-header{padding:20px 34px 16px; border-bottom:1px solid var(--line); flex-shrink:0;}
+  .quiz-eyebrow{font-size:0.68rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--terracotta-deep); font-weight:700; margin:0;}
+  .quiz-heading{font-size:1.2rem; color:var(--forest-deep); margin-top:8px;}
+  .quiz-progress{height:5px; background:var(--line); flex-shrink:0;}
+  .quiz-progress-bar{height:100%; width:20%; background:var(--terracotta); transition:width 0.5s cubic-bezier(.16,1,.3,1);}
+  .quiz-body{padding:32px 34px;}
+  @media(max-width:600px){
+    .quiz-header{padding:16px 22px 12px;}
+    .quiz-heading{font-size:1.02rem;}
+    .quiz-eyebrow{font-size:0.6rem;}
+    .quiz-body{padding:22px;}
+  }
+  .quiz-step{display:none;}
+  .quiz-step.active{display:block; animation:stepIn 0.5s cubic-bezier(.16,1,.3,1);}
+  @keyframes stepIn{from{opacity:0; transform:translateX(16px);} to{opacity:1; transform:translateX(0);}}
+  .quiz-step h3{font-size:1.32rem; color:var(--forest-deep); line-height:1.3;}
+  .quiz-step .qsub{margin-top:6px; font-size:0.88rem; color:#6b7460;}
+  .options{margin-top:22px; display:flex; flex-direction:column; gap:10px;}
+  @media(max-width:600px){
+    .quiz-step h3{font-size:1.05rem;}
+    .quiz-step .qsub{font-size:0.8rem;}
+    .options{margin-top:16px; gap:8px;}
+  }
+  .option-btn{
+    text-align:left; padding:16px 18px; border-radius:14px; border:1.5px solid var(--line);
+    background:var(--cream); font-family:'Work Sans',sans-serif; font-size:0.95rem; font-weight:600;
+    color:var(--forest-deep); cursor:pointer; transition:all 0.25s ease; display:flex; align-items:center; gap:10px;
+    width:100%;
+  }
+  .option-btn:hover{border-color:var(--terracotta); background:var(--blush); transform:translateX(4px);}
+  .quiz-nav{margin-top:20px;}
+  .back-link{font-size:0.82rem; color:#8a9280; font-weight:600; cursor:pointer;}
+  .back-link:hover{color:var(--forest-deep);}
+  .field-group{margin-top:18px; display:flex; flex-direction:column; gap:14px;}
+  .field-group input{
+    padding:15px 16px; border-radius:12px; border:1.5px solid var(--line); font-size:0.95rem;
+    font-family:'Work Sans',sans-serif; background:var(--cream); color:var(--ink);
+    transition:border-color 0.25s ease; width:100%;
+  }
+  .field-group input:focus{outline:none; border-color:var(--terracotta);}
+  .submit-btn{
+    margin-top:20px; width:100%; padding:16px; border-radius:14px; border:none;
+    background:var(--terracotta); color:var(--paper); font-weight:700; font-size:0.98rem; cursor:pointer;
+    transition:background 0.25s ease, transform 0.25s ease;
+  }
+  .submit-btn:hover{background:var(--terracotta-deep); transform:translateY(-2px);}
+  .disqualified{text-align:center; padding:10px 0;}
+  .disqualified .icon{font-size:2.2rem;}
+  .disqualified h3{margin-top:16px;}
+  .disqualified p{margin-top:10px; color:#6b7460; line-height:1.6; font-size:0.92rem;}
+  @media(max-width:600px){
+    .option-btn{padding:12px 14px; font-size:0.86rem; gap:8px;}
+    .quiz-nav{margin-top:14px;}
+    .field-group{margin-top:12px; gap:10px;}
+    .field-group input{padding:12px 14px; font-size:0.86rem;}
+    .submit-btn{margin-top:14px; padding:13px; font-size:0.88rem;}
+    .disqualified .icon{font-size:1.8rem;}
+    .disqualified h3{margin-top:12px; font-size:1.1rem;}
+    .disqualified p{font-size:0.82rem;}
+  }
+</style>
+</head>
+<body>
+
+<div class="quiz-box" id="quiz">
+  <div class="quiz-header">
+    <p class="quiz-eyebrow">Start Here</p>
+    <h3 class="quiz-heading">See If You're a Fit - Takes 30 Seconds</h3>
+  </div>
+  <div class="quiz-progress"><div class="quiz-progress-bar" id="progressBar"></div></div>
+  <div class="quiz-body">
+
+    <div class="quiz-step active" data-step="1">
+      <h3>Are you in the Northern Rivers area?</h3>
+      <p class="qsub">Just so we know where to start.</p>
+      <div class="options">
+        <button class="option-btn" onclick="answerQ('q1','local')">✅ Yes, I'm local</button>
+        <button class="option-btn" onclick="answerQ('q1','travel')">✅ I can travel to the area</button>
+        <button class="option-btn" onclick="answerQ('q1','out')">❌ No, I'm outside the region</button>
+      </div>
+    </div>
+
+    <div class="quiz-step" data-step="dq">
+      <div class="disqualified">
+        <div class="icon">🌿</div>
+        <h3>Thanks for your interest</h3>
+        <p>Unfortunately we're only able to help patients in or able to travel to the Northern Rivers area at this stage.</p>
+      </div>
+    </div>
+
+    <div class="quiz-step" data-step="2">
+      <h3>How soon are you looking to start?</h3>
+      <p class="qsub">There's no wrong answer here.</p>
+      <div class="options">
+        <button class="option-btn" onclick="answerQ('q2','asap')">🔥 As soon as possible</button>
+        <button class="option-btn" onclick="answerQ('q2','soon')">✅ Within the next 1 to 3 months</button>
+        <button class="option-btn" onclick="answerQ('q2','research')">👀 Still researching for now</button>
+      </div>
+      <div class="quiz-nav"><span class="back-link" onclick="goToStep(1)">← Back</span></div>
+    </div>
+
+    <div class="quiz-step" data-step="3">
+      <h3>What's your main smile concern?</h3>
+      <p class="qsub">Pick the one that fits best.</p>
+      <div class="options">
+        <button class="option-btn" onclick="answerQ('q3','appearance')">✅ The appearance of my teeth</button>
+        <button class="option-btn" onclick="answerQ('q3','condition')">✅ The condition of my teeth</button>
+        <button class="option-btn" onclick="answerQ('q3','both')">✅ Both appearance and condition</button>
+      </div>
+      <div class="quiz-nav"><span class="back-link" onclick="goToStep(2)">← Back</span></div>
+    </div>
+
+    <div class="quiz-step" data-step="4">
+      <h3>Almost there - where should we send your consult confirmation?</h3>
+      <p class="qsub">We'll never share your details.</p>
+      <div class="field-group">
+        <input type="text" id="fName" placeholder="Full name">
+        <input type="tel" id="fPhone" placeholder="Phone number">
+        <input type="email" id="fEmail" placeholder="Email address">
+      </div>
+      <button class="submit-btn" onclick="submitQuiz()">Continue to Booking →</button>
+      <div class="quiz-nav"><span class="back-link" onclick="goToStep(3)">← Back</span></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ============================================================
+  // Quiz logic
+  // ============================================================
+  const answers = {};
+  const stepOrder = ['1','2','3','4'];
+
+  function goToStep(stepNum){
+    document.querySelectorAll('.quiz-step').forEach(s=>s.classList.remove('active'));
+    document.querySelector(`.quiz-step[data-step="${stepNum}"]`).classList.add('active');
+    const idx = stepOrder.indexOf(String(stepNum));
+    const pct = stepNum==='dq' ? 100 : Math.min(100, ((idx+1)/4)*100);
+    document.getElementById('progressBar').style.width = pct+'%';
+    sendHeight(); // step change = height change, re-measure
+  }
+
+  function answerQ(key,val){
+    answers[key]=val;
+    if(key==='q1' && val==='out'){ goToStep('dq'); return; }
+    if(key==='q1'){ goToStep(2); }
+    else if(key==='q2'){ goToStep(3); }
+    else if(key==='q3'){ goToStep(4); }
+  }
+
+  function getUtmParams(){
+    // Pull UTM params either from this frame's own URL, or forwarded by the parent
+    // page via query string on the iframe src (see embed script below).
+    const params = new URLSearchParams(window.location.search);
+    const utm = {};
+    ['utm_source','utm_medium','utm_campaign','utm_term','utm_content'].forEach(k=>{
+      if(params.get(k)) utm[k]=params.get(k);
+    });
+    return utm;
+  }
+
+  // Same origin the quiz itself is deployed on (e.g. https://bangalow-quiz.vercel.app).
+  // Since quiz.html and /api/submit ship in the same Vercel project, a relative
+  // path just works — no CORS involved for this call.
+  const SUBMIT_ENDPOINT = '/api/submit';
+
+  async function submitQuiz(){
+    answers.name = document.getElementById('fName').value;
+    answers.phone = document.getElementById('fPhone').value;
+    answers.email = document.getElementById('fEmail').value;
+    Object.assign(answers, getUtmParams());
+
+    const btn = document.querySelector('.submit-btn');
+    const originalLabel = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+
+    try {
+      const res = await fetch(SUBMIT_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(answers),
+      });
+      if (!res.ok) throw new Error('Submit failed: ' + res.status);
+    } catch (err) {
+      console.error(err);
+      // Don't block the user's journey on a webhook hiccup — the lead still
+      // lands in sessionStorage below and the postMessage still fires so the
+      // parent page can log/react to it too. Swap this for a visible error
+      // state if you'd rather stop the funnel here.
+    } finally {
+      btn.disabled = false;
+      btn.textContent = originalLabel;
+    }
+
+    sessionStorage.setItem('bd_lead', JSON.stringify(answers));
+
+    // Tell the parent page the quiz is done, in case it wants to redirect
+    // the top-level page instead of navigating inside the iframe.
+    window.parent.postMessage({ type:'quizComplete', payload: answers }, '*');
+
+    window.location.href = 'booking';
+  }
+
+
+  let lastHeight = 0;
+  function sendHeight(){
+    // small delay lets the step's enter animation/layout settle first
+    requestAnimationFrame(()=>{
+      const h = Math.ceil(document.body.getBoundingClientRect().height);
+      if (h !== lastHeight){
+        lastHeight = h;
+        window.parent.postMessage({ type:'quizResize', height:h }, '*');
+      }
+    });
+  }
+
+  // Re-measure on load, on window resize, and whenever quiz DOM mutates
+  window.addEventListener('load', sendHeight);
+  window.addEventListener('resize', sendHeight);
+  new MutationObserver(sendHeight).observe(document.getElementById('quiz'), {
+    childList:true, subtree:true, attributes:true
+  });
+  // Fonts loading can shift height slightly after first paint
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(sendHeight);
+
+  // Fire once immediately in case load already happened
+  sendHeight();
+</script>
+
+</body>
+</html>
