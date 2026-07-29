@@ -45,7 +45,7 @@
     background:var(--paper); border-radius:24px; box-shadow:var(--shadow); overflow:hidden;
     border:1px solid var(--line); position:relative;
     display:flex; flex-direction:column; height:auto;
-    max-width:480px; margin:0 auto;
+    width:100%; margin:0;
   }
   .quiz-header{padding:20px 34px 16px; border-bottom:1px solid var(--line); flex-shrink:0;}
   .quiz-eyebrow{font-size:0.68rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--terracotta-deep); font-weight:700; margin:0;}
@@ -234,10 +234,8 @@
       if (!res.ok) throw new Error('Submit failed: ' + res.status);
     } catch (err) {
       console.error(err);
-      // Don't block the user's journey on a webhook hiccup — the lead still
-      // lands in sessionStorage below and the postMessage still fires so the
-      // parent page can log/react to it too. Swap this for a visible error
-      // state if you'd rather stop the funnel here.
+      // Webhook hiccup doesn't block the user — lead is still saved locally
+      // and the postMessage still fires so the parent page can react to it.
     } finally {
       btn.disabled = false;
       btn.textContent = originalLabel;
@@ -252,7 +250,11 @@
     window.location.href = 'booking';
   }
 
-
+  // ============================================================
+  // Iframe auto-resize: postMessage the content height to the parent
+  // any time it changes, so the parent can resize the iframe element.
+  // Pairs with the embed-resize listener script on the parent page.
+  // ============================================================
   let lastHeight = 0;
   function sendHeight(){
     // small delay lets the step's enter animation/layout settle first
