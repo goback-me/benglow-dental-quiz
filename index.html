@@ -120,6 +120,16 @@
   <div class="quiz-body">
 
     <div class="quiz-step active" data-step="1">
+      <h3>What's your main smile concern?</h3>
+      <p class="qsub">Pick the one that fits best.</p>
+      <div class="options">
+        <button class="option-btn" onclick="answerQ('q3','appearance')">✅ The appearance of my teeth</button>
+        <button class="option-btn" onclick="answerQ('q3','condition')">✅ The condition of my teeth</button>
+        <button class="option-btn" onclick="answerQ('q3','both')">✅ Both appearance and condition</button>
+      </div>
+    </div>
+
+    <div class="quiz-step" data-step="2">
       <h3>Are you in the Northern Rivers area?</h3>
       <p class="qsub">Just so we know where to start.</p>
       <div class="options">
@@ -127,6 +137,7 @@
         <button class="option-btn" onclick="answerQ('q1','travel')">✅ I can travel to the area</button>
         <button class="option-btn" onclick="answerQ('q1','out')">❌ No, I'm outside the region</button>
       </div>
+      <div class="quiz-nav"><span class="back-link" onclick="goToStep(1)">← Back</span></div>
     </div>
 
     <div class="quiz-step" data-step="dq">
@@ -137,24 +148,13 @@
       </div>
     </div>
 
-    <div class="quiz-step" data-step="2">
+    <div class="quiz-step" data-step="3">
       <h3>How soon are you looking to start?</h3>
       <p class="qsub">There's no wrong answer here.</p>
       <div class="options">
         <button class="option-btn" onclick="answerQ('q2','asap')">🔥 As soon as possible</button>
         <button class="option-btn" onclick="answerQ('q2','soon')">✅ Within the next 1 to 3 months</button>
         <button class="option-btn" onclick="answerQ('q2','research')">👀 Still researching for now</button>
-      </div>
-      <div class="quiz-nav"><span class="back-link" onclick="goToStep(1)">← Back</span></div>
-    </div>
-
-    <div class="quiz-step" data-step="3">
-      <h3>What's your main smile concern?</h3>
-      <p class="qsub">Pick the one that fits best.</p>
-      <div class="options">
-        <button class="option-btn" onclick="answerQ('q3','appearance')">✅ The appearance of my teeth</button>
-        <button class="option-btn" onclick="answerQ('q3','condition')">✅ The condition of my teeth</button>
-        <button class="option-btn" onclick="answerQ('q3','both')">✅ Both appearance and condition</button>
       </div>
       <div class="quiz-nav"><span class="back-link" onclick="goToStep(2)">← Back</span></div>
     </div>
@@ -177,6 +177,8 @@
 <script>
   // ============================================================
   // Quiz logic
+  // Real flow order is: 2 (location) -> 1 (concern) -> 3 (timeline) -> 4 (contact)
+  // stepOrder reflects that VISUAL order so the progress bar climbs correctly.
   // ============================================================
   const answers = {};
   const stepOrder = ['1','2','3','4'];
@@ -185,7 +187,7 @@
     document.querySelectorAll('.quiz-step').forEach(s=>s.classList.remove('active'));
     document.querySelector(`.quiz-step[data-step="${stepNum}"]`).classList.add('active');
     const idx = stepOrder.indexOf(String(stepNum));
-    const pct = stepNum==='dq' ? 100 : Math.min(100, ((idx+1)/4)*100);
+    const pct = stepNum==='dq' ? 100 : Math.min(100, ((idx+1)/stepOrder.length)*100);
     document.getElementById('progressBar').style.width = pct+'%';
     sendHeight(); // step change = height change, re-measure
   }
@@ -193,9 +195,9 @@
   function answerQ(key,val){
     answers[key]=val;
     if(key==='q1' && val==='out'){ goToStep('dq'); return; }
-    if(key==='q1'){ goToStep(2); }
-    else if(key==='q2'){ goToStep(3); }
-    else if(key==='q3'){ goToStep(4); }
+    if(key==='q3'){ goToStep(2); }      // concern answered -> go to location question
+    else if(key==='q1'){ goToStep(3); } // location answered -> go to timeline question
+    else if(key==='q2'){ goToStep(4); } // timeline answered -> go to contact form
   }
 
   function getUtmParams(){
