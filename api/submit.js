@@ -14,8 +14,11 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const webhookUrl = process.env.WEBHOOK_URL;
-  if (!webhookUrl) {
+  const webhookUrls = (process.env.WEBHOOK_URL || '')
+    .split(',')
+    .map((url) => url.trim())
+    .filter(Boolean);
+  if (webhookUrls.length === 0) {
     console.error('Missing WEBHOOK_URL env var');
     return res.status(500).json({ error: 'Server misconfigured' });
   }
@@ -40,25 +43,27 @@ export default async function handler(req, res) {
     user_agent: req.headers['user-agent'] || null,
   };
 
-  try {
-    const webhookRes = await fetch(webhookUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(process.env.WEBHOOK_SECRET ? { 'X-Webhook-Secret': process.env.WEBHOOK_SECRET } : {}),
-      },
-      body: JSON.stringify(payload),
-    });
+  await Promise.all(
+    webhookUrls.map(async (webhookUrl) => {
+      try {
+        const webhookRes = await fetch(webhookUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(process.env.WEBHOOK_SECRET ? { 'X-Webhook-Secret': process.env.WEBHOOK_SECRET } : {}),
+          },
+          body: JSON.stringify(payload),
+        });
 
-    if (!webhookRes.ok) {
-      const text = await webhookRes.text().catch(() => '');
-      console.error('Webhook responded with error', webhookRes.status, text);
-      return res.status(502).json({ error: 'Webhook rejected the submission' });
-    }
+        if (!webhookRes.ok) {
+          const text = await webhookRes.text().catch(() => '');
+          console.error('Webhook responded with error', webhookUrl, webhookRes.status, text);
+        }
+      } catch (err) {
+        console.error('Failed to reach webhook', webhookUrl, err);
+      }
+    })
+  );
 
-    return res.status(200).json({ ok: true });
-  } catch (err) {
-    console.error('Failed to reach webhook', err);
-    return res.status(502).json({ error: 'Failed to reach webhook' });
-  }
+  return res.status(200).json({ ok: true });
 }

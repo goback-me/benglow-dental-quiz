@@ -10,7 +10,7 @@ embed-snippet.html    Paste into the parent page (GHL/Webflow/WP) to embed the q
 ## Deploy
 1. Push this folder to a new Vercel project (or drag-and-drop deploy).
 2. In Vercel -> Project -> Settings -> Environment Variables, add:
-   - `WEBHOOK_URL` (required) — where leads get forwarded (GHL/Zapier/n8n/your tracker)
+   - `WEBHOOK_URL` (required) — where leads get forwarded (GHL/Zapier/n8n/your tracker); comma-separate multiple URLs to fan out to all of them
    - `ALLOWED_ORIGIN` (optional) — lock CORS to your parent site's domain
    - `WEBHOOK_SECRET` (optional) — sent as `X-Webhook-Secret` header to your webhook
 3. Redeploy after adding env vars.
