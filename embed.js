@@ -51,6 +51,9 @@ function init() {
         if (window.dataLayer) {
           window.dataLayer.push({ event: 'quiz_complete', quiz_answers: data.payload });
         }
+        if (data.redirectUrl) {
+          window.location.href = data.redirectUrl;
+        }
       }
     });
   }

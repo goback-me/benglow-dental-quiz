@@ -215,6 +215,7 @@
   // Since quiz.html and /api/submit ship in the same Vercel project, a relative
   // path just works — no CORS involved for this call.
   const SUBMIT_ENDPOINT = '/api/submit';
+  const REDIRECT_URL = 'https://naturalsmiletransformation.com.au/booking-page';
 
   async function submitQuiz(){
     answers.name = document.getElementById('fName').value;
@@ -245,11 +246,10 @@
 
     sessionStorage.setItem('bd_lead', JSON.stringify(answers));
 
-    // Tell the parent page the quiz is done, in case it wants to redirect
-    // the top-level page instead of navigating inside the iframe.
-    window.parent.postMessage({ type:'quizComplete', payload: answers }, '*');
-
-    window.location.href = 'https://naturalsmiletransformation.com.au/booking-page';
+    // Redirect happens on the parent page (see embed.js), not here — setting
+    // window.location.href in this script would only navigate the iframe
+    // itself, leaving the parent page showing the same spot.
+    window.parent.postMessage({ type:'quizComplete', payload: answers, redirectUrl: REDIRECT_URL }, '*');
   }
 
   // ============================================================
