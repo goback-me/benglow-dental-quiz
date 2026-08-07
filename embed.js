@@ -21,9 +21,9 @@
 
     var frameUrl = new URL(config.quizUrl, window.location.href);
     var parentParams = new URLSearchParams(window.location.search);
-    var utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
-    utmKeys.forEach(function (k) {
-      var v = parentParams.get(k);
+    // Forward every query param the parent page was loaded with (ad platforms
+    // append lead_source, campaign, adset, ad_name, utm_*, etc — not just utm_*).
+    parentParams.forEach(function (v, k) {
       if (v) frameUrl.searchParams.set(k, v);
     });
     frameUrl.searchParams.set('page_url', window.location.href);

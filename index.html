@@ -202,14 +202,13 @@
   }
 
   function getUtmParams(){
-    // Pull UTM params either from this frame's own URL, or forwarded by the parent
-    // page via query string on the iframe src (see embed script below).
+    // Pull every query param off this frame's own URL — either set directly
+    // (quiz opened standalone) or forwarded by the parent page via the iframe
+    // src (see embed.js), which now passes through the full query string
+    // (utm_*, lead_source, campaign, adset, ad_name, page_url, etc).
     const params = new URLSearchParams(window.location.search);
     const utm = {};
-    ['utm_source','utm_medium','utm_campaign','utm_term','utm_content'].forEach(k=>{
-      if(params.get(k)) utm[k]=params.get(k);
-    });
-    if(params.get('page_url')) utm.page_url = params.get('page_url');
+    params.forEach((v,k)=>{ if(v) utm[k]=v; });
     return utm;
   }
 
