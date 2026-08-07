@@ -1,15 +1,17 @@
 (function () {
   // ============================================================
-  // CONFIG — only thing you need to change
+  // CONFIG — one entry per quiz embedded on this page
   // ============================================================
-  var QUIZ_URL = 'https://benglow-dental-quiz.vercel.app/';
-  var CONTAINER_ID = 'smile-quiz-embed';
+  var QUIZZES = [
+    { quizUrl: 'https://benglow-dental-quiz.vercel.app/', containerId: 'smile-quiz-embed' },
+    { quizUrl: 'https://benglow-dental-quiz.vercel.app/invisalign.html', containerId: 'invisalign-quiz-embed' }
+  ];
   // ============================================================
 
-function init() {
-    var container = document.getElementById(CONTAINER_ID);
+  function initOne(config) {
+    var container = document.getElementById(config.containerId);
     if (!container) {
-      console.warn('[smile-quiz] No element with id="' + CONTAINER_ID + '" found on this page.');
+      // Most pages only have one of the containers — that's expected, not an error.
       return;
     }
 
@@ -17,7 +19,7 @@ function init() {
     container.style.lineHeight = '0';
     container.style.fontSize = '0';
 
-    var frameUrl = new URL(QUIZ_URL, window.location.href);
+    var frameUrl = new URL(config.quizUrl, window.location.href);
     var parentParams = new URLSearchParams(window.location.search);
     var utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
     utmKeys.forEach(function (k) {
@@ -26,7 +28,7 @@ function init() {
     });
 
     var frame = document.createElement('iframe');
-    frame.id = 'smileQuizFrame';
+    frame.id = config.containerId + '-frame';
     frame.src = frameUrl.toString();
     frame.title = 'Smile Fit Quiz';
     frame.setAttribute('scrolling', 'no');
@@ -40,6 +42,7 @@ function init() {
     container.appendChild(frame);
 
     window.addEventListener('message', function (e) {
+      if (e.source !== frame.contentWindow) return; // not this quiz's iframe
       var data = e.data || {};
 
       if (data.type === 'quizResize' && typeof data.height === 'number') {
@@ -56,6 +59,10 @@ function init() {
         }
       }
     });
+  }
+
+  function init() {
+    QUIZZES.forEach(initOne);
   }
 
   if (document.readyState === 'loading') {
