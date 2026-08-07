@@ -26,6 +26,7 @@
       var v = parentParams.get(k);
       if (v) frameUrl.searchParams.set(k, v);
     });
+    frameUrl.searchParams.set('page_url', window.location.href);
 
     var frame = document.createElement('iframe');
     frame.id = config.containerId + '-frame';

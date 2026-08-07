@@ -209,6 +209,7 @@
     ['utm_source','utm_medium','utm_campaign','utm_term','utm_content'].forEach(k=>{
       if(params.get(k)) utm[k]=params.get(k);
     });
+    if(params.get('page_url')) utm.page_url = params.get('page_url');
     return utm;
   }
 
